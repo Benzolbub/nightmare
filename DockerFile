@@ -1,0 +1,29 @@
+# Dockerfile for Web3 Exploitation Toolkit
+FROM python:3.10-slim
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    git curl build-essential libssl-dev libffi-dev \
+    python3-dev python3-pip \
+    metasploit-framework \
+    nodejs npm \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Install JavaScript dependencies for phishing module
+RUN npm install -g serve
+
+# Copy source code
+COPY . /app
+WORKDIR /app
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+
+# Entry point for the CLI
+ENTRYPOINT ["python3", "nightmare.py"]
+#docker pull metasploitframework/metasploit-framework
+#docker run --rm -it metasploitframework/metasploit-framework msfconsole
